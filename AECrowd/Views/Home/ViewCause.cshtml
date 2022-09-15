@@ -15,7 +15,7 @@
         Goal: @Model.Cause.FundGoal Æ<br />
         Balance: @(Model.Donations.Sum(x => x.Amount).ToString("N4")) Æ <br />
         Deadline: <b>@Model.Cause.Deadline.ToLocalTime()</b> <br />
-        XRPL Address: @Model.Cause.AEAddress
+        Æ Address: @Model.Cause.AEAddress
     </div>
 </div>
 <h3>Description</h3>
