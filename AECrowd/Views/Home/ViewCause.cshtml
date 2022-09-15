@@ -1,0 +1,152 @@
+﻿@model AECrowd.Models.ViewCauseViewModel
+@{
+    ViewBag.Title = Model.Cause.Name;
+}
+
+<h2>@Model.Cause.Name</h2>
+
+<div class="row">
+    <div class="col-lg-6 col-md-6 col-sm-6">
+        <img src="@Model.Cause.UrlPhoto" alt="@Model.Cause.Name" style="height:250px;" class="img-rounded img-responsive" />
+    </div>
+    <div class="col-lg-6 col-md-6 col-sm-6 alert alert-success">
+        Website URL: <a href="@Model.Cause.Website" target="_blank">@Model.Cause.Website</a> <br />
+        Created At: @Model.Cause.CreatedAt.ToLocalTime() <br />
+        Goal: @Model.Cause.FundGoal Æ<br />
+        Balance: @(Model.Donations.Sum(x => x.Amount).ToString("N4")) Æ <br />
+        Deadline: <b>@Model.Cause.Deadline.ToLocalTime()</b> <br />
+        XRPL Address: @Model.Cause.AEAddress
+    </div>
+</div>
+<h3>Description</h3>
+
+<div class="row">
+    <div class="col-lg-12 col-md-12 col-sm-12 text-justify">
+        @Model.Cause.Description
+    </div>
+</div>
+
+<h3>Donate</h3>
+
+@if(Model.Cause.Deadline.ToLocalTime() < DateTime.UtcNow.ToLocalTime())
+{
+    <div class="col-lg-6 col-md-6 col-sm-6 alert alert-warning ">
+        This cause has already completed its donation timeline.
+    </div>
+}
+else
+{
+    @using(Html.BeginForm("Donate","Home",FormMethod.Post,new { id="form_donation" }))
+    {
+        <input type="hidden" value="@Model.Cause.Id" name="Form.Id" />
+        <input type="hidden" name="Form.AEAddress" id="walletPublicKey" />
+        <div class="row">
+            <div class="col-lg-2 col-md-2 col-sm-2 text-justify">
+                Æ amount: <br />
+                <input type="number" min="0" name="Form.Amount" required="required" id="amount" class="form-control" />
+            </div>
+            <div class="col-lg-3 col-md-3 col-sm-3 text-justify">
+                Your wallet public key: <br />
+                <input type="text" name="public" required="required" id="public" class="form-control" />
+            </div>
+            <div class="col-lg-3 col-md-3 col-sm-3 text-justify">
+                Your wallet secret key (we don't save this data): <br />
+                <input type="text" name="secret" required="required" id="secret" class="form-control" />
+            </div>
+            <div class="col-lg-4 col-md-4 col-sm-4 text-justify">
+                <br />
+                <a href="#" onclick="donate();return false;" class="btn btn-success">Donate</a>
+                <br />
+                <span class="message_xrp" style="display:none;">Sending Æ</span>
+            </div>
+        </div> 
+
+    }
+}
+
+<h3>Donations</h3>
+
+<div class="row">
+    <div class="col-lg-12 col-md-12 col-sm-12 text-justify">
+        <table class="table">
+            <thead>
+                <tr>
+                    <th>Amount in Æ</th>
+                    <th>From</th>
+                    <th>Created At</th>
+                </tr>
+            </thead>
+            <tbody>
+        @foreach(var donation in Model.Donations)
+        {
+            <tr>
+                <td>@donation.Amount</td>
+                <td>@donation.AEAddress</td>
+                <td>@donation.CreatedAt.ToLocalTime()</td>
+            </tr>
+
+        }
+        </tbody>
+        </table>
+    </div>
+</div>
+<br /><br />
+
+
+@section Scripts
+{
+    
+<script type="text/javascript">
+    
+    async function donate() {
+        var amount = $('#amount').val();
+        var seed = $('#secret').val();
+        var public = $('#public').val();
+        if(secret == '' || amount == '')
+        {
+            alert('You need to add an amount and your wallet address and secret key to donate.');
+            return false;
+        }
+        else {
+            try {
+                $('#walletPublicKey').val(public);
+                const NODE_URL = 'https://testnet.aeternity.io'
+                const COMPILER_URL = 'https://compiler.aepps.com' // required for contract interactions
+                const senderAccount = new Ae.MemoryAccount({
+                  // replace <SENDER_SECRET> and <SENDER_PUBLIC_KEY> with the generated keypair from step 2
+                  keypair: { secretKey: seed, publicKey: public }
+                });
+
+                (async function () {
+                  const node = new Ae.Node(NODE_URL)
+                  const aeSdk = new Ae.AeSdk({
+                    compilerUrl: COMPILER_URL,
+                    nodes: [{ name: 'testnet', instance: node }],
+                  })
+                  // Add sender account to the aeSdk state
+                  await aeSdk.addAccount(senderAccount, { select: true })
+                  $('.message_xrp').text('Sending Æ')
+                  $('.message_xrp').css("display","block");
+
+                  // spend one AE
+                  await aeSdk.spend(1, '@Model.Cause.AEAddress', {
+                    // replace <RECIPIENT_PUBLIC_KEY>, Ideally you use public key from Superhero Wallet you have created before
+                    denomination: Ae.AE_AMOUNT_FORMATS.AE
+                  })
+                  $('.message_xrp').text('Your Æ was received for this cause.')
+                    $('#form_donation').submit();
+                })()
+            }
+            catch (err) {
+                $('.message_xrp').text('There is an error with your donation')
+                $('.message_xrp').css("display","block");
+            }
+            finally {
+
+            }
+            
+        }
+     }
+    
+</script>
+}

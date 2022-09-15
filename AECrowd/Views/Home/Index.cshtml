@@ -1,0 +1,43 @@
+﻿@{
+    ViewData["Title"] = "Home Page";
+}
+
+<br /><br />
+<div class="row">
+    <div class="col-md-4 col-lg-4 col-sm-4">
+        <img src="@Url.Content("~/images/default.png")" alt="ÆCrowd" class="img-responsive" style="height:350px;" />
+    </div>
+    <div class="col-md-7 col-lg-7 col-sm-7">
+        <div class="jumbotron">
+            <h1>ÆCrowd</h1>
+
+            <p class="lead text-justify">
+                <b>ÆCrowd</b> is a platform to support charitable causes through Æ donations. Currently, charitable causes depend on data movements in the current financial system,
+                which makes it difficult to accept amounts from other parts of the world and also not receive all of these amounts (commissions for banks). <br />
+                <b>ÆCrowd</b> is the <b>Kiva for Æternity</b>.
+            </p>
+        </div>
+    </div>
+</div>
+
+
+<div class="row">
+    <div class="col-md-4">
+        <h2>View causes</h2>
+        <p>
+            You can see all the charitable causes and decide which one to donate Æ to.
+        </p>
+        <p><a class="btn btn-primary" href="@Url.Action("ListCauses","Home")">View &raquo;</a></p>
+    </div>
+    <div class="col-md-4">
+        <h2>Submit your cause</h2>
+        <p>Are you helping a community or are you a person who requires help to improve your life? You can upload your cause and accept Æ.</p>
+        <p><a class="btn btn-primary" href="@Url.Action("CreateCause","Home")">Submit your cause &raquo;</a></p>
+    </div>
+    <div class="col-md-4">
+        <h2>Æ Address</h2>
+        <p>Do you need to create a Æ address? You can do it here before uploading your cause. You can also receive trial funds to donate.</p>
+        <p><a class="btn btn-primary" href="@Url.Action("CreateAEAddress","Home")">Create Æ address &raquo;</a></p>
+    </div>
+</div>
+<br /><br />

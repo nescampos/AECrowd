@@ -1,0 +1,57 @@
+﻿@{
+    ViewBag.Title = "Create Æ address";
+}
+
+
+<h2>Create Æ address</h2>
+
+<div class="alert alert-success">
+    If you don't have an Æ address, you can create one here. Please, save the data in a safe place.
+</div>
+
+
+<div class="form-horizontal">
+    <div class="form-group">
+        <div class="col-md-offset-2 col-md-10">
+            Please, click here: <a href="#" class="btn btn-primary" onclick="generateAddress();return false;">Generate new address</a>
+        </div>
+    </div>
+    <div class="row">
+        <div class="col-md-12">
+            Your new address (public key): <b><span id="public"></span></b>
+        </div>
+    </div>
+    <br />
+    <div class="row">
+        <div class="col-md-12">
+            Secret key: <b><span id="private"></span></b>
+        </div>
+    </div>
+    <br />
+    <div class="row">
+        <div class="col-md-8">
+            Faucet: If you want some Æ for testing, use this <a href="https://faucet.aepps.com/" target="_blank">faucet</a>.
+        </div>
+    </div>
+    <br />
+</div>
+
+@section Scripts
+{
+    <script type="text/javascript">
+        const node = new Ae.Node('https://testnet.aeternity.io')
+        const aeSdk = new Ae.AeSdk({
+            nodes: [{ name: 'testnet', instance: node }]
+        })
+        
+
+        async function generateAddress() {
+            const newAddress = Ae.generateKeyPair()
+            $('#public').text(newAddress.publicKey)
+            $('#private').text(newAddress.secretKey)
+            
+
+            return false;
+        }
+    </script>
+}
